@@ -1,11 +1,13 @@
 import unittest
 from fastapi.testclient import TestClient
-from main import app  # assuming the FastAPI code is in main.py
+from main import app, expenses
 from datetime import datetime
 
 class TestExpenseTracker(unittest.TestCase):
     def setUp(self):
         self.client = TestClient(app)
+        expenses.clear()
+        print("Setup: Cleared expenses")
 
     def test_add_expense(self):
         response = self.client.post("/add_expense", json={
@@ -50,6 +52,7 @@ class TestExpenseTracker(unittest.TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_view_total_expenses(self):
+        print("Initial expenses:", expenses)
         # First, add some expenses
         self.client.post("/add_expense", json={
             "date": datetime.now().isoformat(),
@@ -63,10 +66,13 @@ class TestExpenseTracker(unittest.TestCase):
             "amount": 15.0,
             "description": "Bus fare"
         })
-        
+
+        print("Expenses after adding:", expenses)
+
         # Then, view total expenses
         response = self.client.get("/view_total_expenses")
         self.assertEqual(response.status_code, 200)
+        print("Total expenses response:", response.json())
         self.assertEqual(response.json(), {"total_amount": 35.5})
 
 if __name__ == "__main__":

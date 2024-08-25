@@ -19,10 +19,12 @@ class Expense(BaseModel):
 @app.post("/add_expense", response_model=dict)
 async def add_expense(expense: Expense):
     expenses.append(expense)
+    print("Expense added. Current expenses:", expenses)
     return {"message": "Expense added successfully"}
 
 @app.get("/view_expenses", response_model=List[Expense])
 async def view_expenses():
+    print("Viewing expenses:", expenses)
     return expenses
 
 @app.get("/view_expenses_by_category", response_model=List[Expense])
@@ -35,4 +37,5 @@ async def view_expenses_by_category(category: str):
 @app.get("/view_total_expenses", response_model=dict)
 async def view_total_expenses():
     total_amount = sum(exp.amount for exp in expenses)
+    print("Calculating total expenses. Current expenses:", expenses)
     return {"total_amount": total_amount}
